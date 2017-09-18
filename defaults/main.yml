@@ -1,0 +1,9 @@
+---
+docker_registry_path: /opt/docker/registry
+docker_registry_volume: /var/lib/registry
+docker_registry_port: 5000
+
+# allow playbook to override these file paths
+# make sure you override theme with absolute path (built-in "playbook_dir" might be useful)
+docker_registry_config_file: files/config.yml
+docker_registry_compose_file: templates/docker-compose.yml.j2
