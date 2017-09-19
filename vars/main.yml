@@ -1,0 +1,4 @@
+---
+docker_registry_compose_file: templates/proxy.yml.j2
+docker_registry_remote_compose_file: proxy.yml
+

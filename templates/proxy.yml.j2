@@ -1,13 +1,14 @@
 version: '2'
 
 services:
-  registry:
+  registry_proxy:
     image: registry:2
-    container_name: registry
+    container_name: registry_proxy
     restart: unless-stopped
     ports:
       - "{{ docker_registry_port }}:5000"
+    environment:
+      REGISTRY_PROXY_REMOTEURL: https://registry-1.docker.io
     volumes:
       - "/etc/localtime:/etc/localtime"
       - "{{ docker_registry_volume }}:/var/lib/registry"
-      - "./config.yml:/etc/docker/registry/config.yml"

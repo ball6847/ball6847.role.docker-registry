@@ -4,20 +4,38 @@
     path: "{{ docker_registry_path }}"
     state: directory
 
-- name: Create registry config
-  copy:
-    src: "{{ docker_registry_config_file }}"
-    dest: "{{ docker_registry_path }}/config.yml"
+- set_fact:
+    docker_registry_compose_file: "templates/registry.yml.j2"
+  when: "docker_registry_role == 'registry'"
+
+- set_fact:
+    docker_registry_remote_compose_file: "registry.yml"
+  when: "docker_registry_role == 'registry'"
+
+- set_fact:
+    docker_registry_compose_file: "templates/proxy.yml.j2"
+  when: "docker_registry_role == 'proxy'"
+
+- set_fact:
+    docker_registry_remote_compose_file: "proxy.yml"
+  when: "docker_registry_role == 'proxy'"
+
+- debug:
+    var: docker_registry_role
+- debug:
+    var: docker_registry_compose_file
+- debug:
+    var: docker_registry_remote_compose_file
 
 - name: Create docker-compose.yml
   template:
     src: "{{ docker_registry_compose_file }}"
-    dest: "{{ docker_registry_path }}/docker-compose.yml"
+    dest: "{{ docker_registry_path }}/{{ docker_registry_remote_compose_file }}"
 
 # NOTE: docker-compose writes stdout to stderr (don't know why?, but just use 2>&1 for now)
 #       also we have no option and need to check output with color which doesn't make sense at all
 - name: Start registry container
-  shell: docker-compose up -d --remove-orphans 2>&1
+  shell: docker-compose -f {{ docker_registry_remote_compose_file }} up -d 2>&1
   args:
     chdir: "{{ docker_registry_path }}"
   register: docker_compose_up
